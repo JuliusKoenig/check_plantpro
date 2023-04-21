@@ -126,8 +126,8 @@ def _get_sensors() -> dict:
 
 if __name__ == '__main__':
     args = argparse.ArgumentParser()
-    args.add_argument("-H", "--host", help="Hostname or Ipaddress", default="localhost")
-    args.add_argument("-p", "--port", help="Port", default=8000)
+    args.add_argument("-H", "--host", help="Hostname or Ipaddress", required=True)
+    args.add_argument("-p", "--port", help="Port", default=80)
     args.add_argument("-t", "--timeout", help="HTTP Timeout", default=5, type=int)
     args.add_argument("-e", "--encoding", help="Encoding for Web-scrapping", default="utf-8")
     args.add_argument("-u", "--user", help="Auth pser", default="monitoring")
