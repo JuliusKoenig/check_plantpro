@@ -136,7 +136,7 @@ if __name__ == '__main__':
     args.add_argument("-V", "--version", help="Version", action="store_true")
     args.add_argument("-w", "--warning", help="Warning Threshold", default=None, type=float)
     args.add_argument("-c", "--critical", help="critical Threshold", default=None, type=float)
-    args.add_argument("-s", "--filter", help="Filter by sensor name. For example: 'I/O-Modul 1.Kuehlung'", default="")
+    args.add_argument("-f", "--filter", help="Filter by sensor name. For example: 'I/O-Modul 1.Kuehlung'", default="")
 
     args = args.parse_args()
 
