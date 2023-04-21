@@ -22,12 +22,16 @@ def _version():
 
 
 def _post(url: str, form_data: dict) -> requests.Response:
-    logger.debug(f"POST {url} with data: {form_data}")
-    response = requests.post(url, data=form_data, timeout=args.timeout)
-    logger.debug(f"response: {response}")
+    try:
+        logger.debug(f"POST {url} with data: {form_data}")
+        response = requests.post(url, data=form_data, timeout=args.timeout)
+        logger.debug(f"response: {response}")
 
-    if response.status_code != 200:
-        raise Exception("POST failed")
+        if response.status_code != 200:
+            raise Exception("POST failed")
+    except Exception as e:
+        logger.exception(e)
+        sys.exit(3)
 
     return response
 
@@ -132,7 +136,7 @@ if __name__ == '__main__':
     args.add_argument("-e", "--encoding", help="Encoding for Web-scrapping", default="utf-8")
     args.add_argument("-u", "--user", help="Auth pser", default="monitoring")
     args.add_argument("-P", "--password", help="Auth password", default="")
-    args.add_argument("-v", "--verbose", help="Verbose", action="store_true", default=True)
+    args.add_argument("-v", "--verbose", help="Verbose", action="store_true")
     args.add_argument("-V", "--version", help="Version", action="store_true")
     args.add_argument("-w", "--warning", help="Warning Threshold", default=None, type=float)
     args.add_argument("-c", "--critical", help="critical Threshold", default=None, type=float)
