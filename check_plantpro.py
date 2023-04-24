@@ -200,7 +200,7 @@ if __name__ == '__main__':
                 nagios_exit(3, f"Sensor '{args.filter}' not found")
             value = list(filtered_sensors.values())[0]["value"]
             unit = list(filtered_sensors.values())[0]["unit"]
-            exit_message = f"{args.filter}: {value} {unit}"
+            exit_message = f"{value} {unit}"
         else:
             exit_message = "All Sensors OK"
     else:
