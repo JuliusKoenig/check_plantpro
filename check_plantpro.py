@@ -8,7 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 
 TITLE = "check_plantpro"
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 AUTHOR = "Julius König"
 
 # configure logging
