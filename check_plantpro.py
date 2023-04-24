@@ -195,7 +195,10 @@ if __name__ == '__main__':
         elif exit_code == 2:
             exit_message += f"Critical: {k} is {v['value']} {v['unit']}\\n"
     if exit_code == 0:
-        exit_message = "All sensors are OK"
+        exit_message = ""
+        for k, v in filtered_sensors.items():
+            exit_message += f"{k} is {v['value']} {v['unit']}, "
+        exit_message = exit_message[:-2]
     else:
         exit_message = exit_message[:-2]
 
