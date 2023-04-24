@@ -21,6 +21,18 @@ def _version():
     print(f"{TITLE} {VERSION} by {AUTHOR}")
 
 
+def nagios_exit(ec: int, em: str = None, pd: str = None):
+    logger.debug(f"exit_code: {ec}, exit_message: {em}, perf_data: {pd}")
+    m = ""
+    if em:
+        m = em
+    if pd:
+        m += f" | {pd}"
+    if m:
+        print(m)
+    sys.exit(ec)
+
+
 def _post(url: str, form_data: dict) -> requests.Response:
     try:
         logger.debug(f"POST {url} with data: {form_data}")
@@ -29,11 +41,10 @@ def _post(url: str, form_data: dict) -> requests.Response:
 
         if response.status_code != 200:
             raise Exception("POST failed")
+        return response
     except Exception as e:
         logger.exception(e)
-        sys.exit(3)
-
-    return response
+        nagios_exit(3, f"POST {url} failed")
 
 
 def _form(id_menu: str, go: str, id_button: str) -> dict:
@@ -61,7 +72,11 @@ def _login():
         5: args.password,
     })
 
-    _post(url, form_data)
+    response = _post(url, form_data)
+    html = response.content.decode(args.encoding)
+    authenticated = "form action=\"003.t\"" in html
+    if not authenticated:
+        nagios_exit(3, "Login failed")
 
 
 def _get_alarms() -> list:
@@ -134,7 +149,7 @@ if __name__ == '__main__':
     args.add_argument("-p", "--port", help="Port", default=80)
     args.add_argument("-t", "--timeout", help="HTTP Timeout", default=5, type=int)
     args.add_argument("-e", "--encoding", help="Encoding for Web-scrapping", default="utf-8")
-    args.add_argument("-u", "--user", help="Auth pser", default="monitoring")
+    args.add_argument("-u", "--user", help="Auth user", default="monitoring")
     args.add_argument("-P", "--password", help="Auth password", default="")
     args.add_argument("-v", "--verbose", help="Verbose", action="store_true")
     args.add_argument("-V", "--version", help="Version", action="store_true")
@@ -146,7 +161,7 @@ if __name__ == '__main__':
 
     if args.version:
         _version()
-        exit(0)
+        nagios_exit(0)
 
     logger.setLevel(logging.DEBUG if args.verbose else logging.INFO)
 
@@ -190,5 +205,4 @@ if __name__ == '__main__':
         c = args.critical if args.critical is not None else ""
         perf_data += f"'{k}'={v['value']}{v['unit']};{w};{c};; "
 
-    print(f"{exit_message} | {perf_data}")
-    sys.exit(exit_code)
+    nagios_exit(exit_code, exit_message, perf_data)
