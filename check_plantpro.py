@@ -195,10 +195,14 @@ if __name__ == '__main__':
         elif exit_code == 2:
             exit_message += f"Critical: {k} is {v['value']} {v['unit']}\\n"
     if exit_code == 0:
-        exit_message = ""
-        for k, v in filtered_sensors.items():
-            exit_message += f"{k} is {v['value']} {v['unit']}, "
-        exit_message = exit_message[:-2]
+        if args.filter != "":
+            if len(filtered_sensors) == 0:
+                nagios_exit(3, f"Sensor '{args.filter}' not found")
+            value = list(filtered_sensors.values())[0]["value"]
+            unit = list(filtered_sensors.values())[0]["unit"]
+            exit_message = f"{args.filter}: {value} {unit}"
+        else:
+            exit_message = "All Sensors OK"
     else:
         exit_message = exit_message[:-2]
 
