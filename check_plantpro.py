@@ -75,12 +75,12 @@ def _login():
     response = _post(url, form_data)
     html = response.content.decode(args.encoding)
     authenticated = "form action=\"003.t\"" in html
-    if not authenticated:
-        nagios_exit(3, "Login failed")
+    # if not authenticated:
+    #     nagios_exit(3, "Login failed")
 
 
 def _get_alarms() -> list:
-    url: str = "http://localhost:8000/036.t"
+    url: str = f"http://{args.host}:{args.port}/037.t"
 
     out = []
 
@@ -146,11 +146,11 @@ def _get_sensors() -> dict:
 if __name__ == '__main__':
     args = argparse.ArgumentParser()
     args.add_argument("-H", "--host", help="Hostname or Ipaddress", required=True)
-    args.add_argument("-p", "--port", help="Port", default=80)
+    args.add_argument("-P", "--port", help="Port", default=80)
     args.add_argument("-t", "--timeout", help="HTTP Timeout", default=5, type=int)
     args.add_argument("-e", "--encoding", help="Encoding for Web-scrapping", default="utf-8")
     args.add_argument("-u", "--user", help="Auth user", default="monitoring")
-    args.add_argument("-P", "--password", help="Auth password", default="")
+    args.add_argument("-p", "--password", help="Auth password", default="")
     args.add_argument("-v", "--verbose", help="Verbose", action="store_true")
     args.add_argument("-V", "--version", help="Version", action="store_true")
     args.add_argument("-w", "--warning", help="Warning Threshold", default=None, type=float)
