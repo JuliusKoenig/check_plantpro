@@ -8,7 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 
 TITLE = "check_plantpro"
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 AUTHOR = "Julius König"
 
 # configure logging
@@ -144,6 +144,7 @@ def _get_sensors() -> dict:
 
 
 if __name__ == '__main__':
+    retry = 0
     args = argparse.ArgumentParser()
     args.add_argument("-H", "--host", help="Hostname or Ipaddress", required=True)
     args.add_argument("-P", "--port", help="Port", default=80)
@@ -156,6 +157,7 @@ if __name__ == '__main__':
     args.add_argument("-w", "--warning", help="Warning Threshold", default=None, type=float)
     args.add_argument("-c", "--critical", help="critical Threshold", default=None, type=float)
     args.add_argument("-f", "--filter", help="Filter by sensor name. For example: 'I/O-Modul 1.Kuehlung'", default="")
+    args.add_argument("-r", "--retry", help="Retry", default=3, type=int)
 
     args = args.parse_args()
 
@@ -166,9 +168,22 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG if args.verbose else logging.INFO)
 
     logger.debug(f"args: {args}")
-    _login()
-    sensors = _get_sensors()
-    alarms = _get_alarms()
+    sensors, alarms = None, None
+    while retry < args.retry:
+        logger.debug(f"retry: {retry}/{args.retry}")
+        try:
+            retry += 1
+            _login()
+            sensors = _get_sensors()
+            alarms = _get_alarms()
+            break
+        except Exception as e:
+            logger.exception(e)
+            time.sleep(1)
+            continue
+    if sensors is None or alarms is None:
+        logger.error("Could not get data")
+        nagios_exit(3, "Could not get data")
 
     exit_code = 0
     exit_message = ""
