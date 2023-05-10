@@ -157,7 +157,7 @@ if __name__ == '__main__':
     args.add_argument("-w", "--warning", help="Warning Threshold", default=None, type=float)
     args.add_argument("-c", "--critical", help="critical Threshold", default=None, type=float)
     args.add_argument("-f", "--filter", help="Filter by sensor name. For example: 'I/O-Modul 1.Kuehlung'", default="")
-    args.add_argument("-r", "--retry", help="Retry", default=3, type=int)
+    args.add_argument("-r", "--retry", help="Retry", default=10, type=int)
 
     args = args.parse_args()
 
@@ -177,8 +177,9 @@ if __name__ == '__main__':
             sensors = _get_sensors()
             alarms = _get_alarms()
             break
-        except Exception:
-            time.sleep(1)
+        except Exception as e:
+            logger.debug(e)
+            time.sleep(3)
             continue
     if sensors is None or alarms is None:
         logger.error("Could not get data")
