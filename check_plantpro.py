@@ -177,8 +177,7 @@ if __name__ == '__main__':
             sensors = _get_sensors()
             alarms = _get_alarms()
             break
-        except Exception as e:
-            logger.exception(e)
+        except Exception:
             time.sleep(1)
             continue
     if sensors is None or alarms is None:
